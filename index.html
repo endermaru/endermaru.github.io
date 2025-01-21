@@ -5,104 +5,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이미지 슬라이더</title>
     <style>
-        /* 기본 설정 */
         body {
             margin: 0;
             padding: 0;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            background-color: #f4f4f9;
+            background-color: #f2eadc;
             font-family: Arial, sans-serif;
+        }
+
+        /* 전체 컨테이너 */
+        #outer-container {
+            position: relative;
+            width: 400px; /* 이미지 너비와 동일하게 설정 */
+            height: 500px; /* 이미지 높이와 동일하게 설정 */
+            /* background: #fff; */
+            /* border: 1px solid #ddd; */
+            
+            /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* 슬라이더와 버튼 위치 조정 */
         }
 
         /* 이미지 컨테이너 */
         #image-container {
+            flex: 1;
             position: relative;
-            max-width: 30%; /* 화면 너비의 90%로 제한 */
-            max-height: 40%; /* 화면 높이의 80%로 제한 */
-            overflow: hidden;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* 이미지 슬라이드 */
         .image-slide {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain; /* 이미지 비율 유지 */
+            object-fit: contain;
         }
 
-        /* 버튼과 슬라이더 */
-        .controls {
-            margin-top: 20px;
-            text-align: center;
-        }
-
+        /* 슬라이더 */
         #image-slider {
-            width: 80%;
-            margin: 10px auto;
+            /* margin: 10px; */
+            margin: 10px; /* 여백 축소 */
+            width: calc(100% - 60px); /* 슬라이더 크기 조정 */
+            height: 5px; /* 슬라이더 높이 축소 */
+            align-self: center;
+        }
+
+        /* 버튼 */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            gap: 5px; /* 버튼 간격 축소 */
+            padding: 5px; /* 버튼 영역 간격 축소 */
         }
 
         button {
-            padding: 10px 20px;
-            margin: 5px;
-            background-color: #007bff;
+            padding: 5px 7px;
+            font-size: 10px;
+            width: 65px;
+            background-color: #917464;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
             transition: background-color 0.3s;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #826051;
         }
 
         button:active {
-            background-color: #003f7f;
+            background-color: #3b332f;
         }
+        
     </style>
 </head>
 <body>
-    <!-- 이미지 컨테이너 -->
-    <div id="image-container" style="position: relative; width: 200px; height: 300px; overflow: hidden;">
+    <!-- 전체 컨테이너 -->
+    <div id="outer-container">
+        <!-- 이미지 컨테이너 -->
+        <div id="image-container">
+            <img src="map_2019.png" alt="Map 1" class="image-slide" style="display: block;">
+            <img src="map_2020.png" alt="Map 2" class="image-slide" style="display: none;">
+            <img src="map_2021.png" alt="Map 3" class="image-slide" style="display: none;">
+            <img src="map_2022.png" alt="Map 4" class="image-slide" style="display: none;">
+            <img src="map_2023.png" alt="Map 5" class="image-slide" style="display: none;">
+            <img src="map_2024.png" alt="Map 6" class="image-slide" style="display: none;">
+        </div>
 
-        <img src="map_2019.png" alt="Map 1" class="image-slide" style="display: block;">
-        <img src="map_2020.png" alt="Map 2" class="image-slide" style="display: none;">
-        <img src="map_2021.png" alt="Map 3" class="image-slide" style="display: none;">
-        <img src="map_2022.png" alt="Map 4" class="image-slide" style="display: none;">
-        <img src="map_2023.png" alt="Map 5" class="image-slide" style="display: none;">
-        <img src="map_2024.png" alt="Map 6" class="image-slide" style="display: none;">
-    </div>
+        <!-- 슬라이더 -->
+        <input id="image-slider" type="range" min="0" max="5" value="0" step="1">
 
-    <!-- 슬라이더 -->
-    <input id="image-slider" type="range" min="0" max="5" value="0">
-    </br>
 
-    <!-- 버튼 -->
-    <div class="controls">
-        <button id="prev-button">이전</button>
-        <button id="next-button">다음</button>
-        <button id="auto-play-button">자동 재생</button>
-        <button id="stop-button">재생 멈춤</button>
+        <!-- 버튼 -->
+        <div class="controls">
+            <button id="prev-button">이전</button>
+            <button id="next-button">다음</button>
+            <button id="auto-play-button">자동 재생</button>
+            <button id="stop-button">재생 멈춤</button>
+            <button id="reset-button">처음으로</button>
+        </div>
     </div>
 
     <script>
         const images = document.querySelectorAll('.image-slide');
         const slider = document.getElementById('image-slider');
         let currentIndex = 0;
-        let autoplay; // 자동 재생 interval
+        let autoplay;
 
-        // 이미지 및 슬라이더 업데이트 함수
         const updateImageAndSlider = (index) => {
             images.forEach((img, i) => {
                 img.style.display = i === index ? 'block' : 'none';
@@ -110,7 +127,6 @@
             slider.value = index;
         };
 
-        // "다음 이미지" 버튼 클릭 이벤트
         document.getElementById('next-button').addEventListener('click', () => {
             if (currentIndex < images.length - 1) {
                 currentIndex++;
@@ -118,7 +134,6 @@
             }
         });
 
-        // "이전 이미지" 버튼 클릭 이벤트
         document.getElementById('prev-button').addEventListener('click', () => {
             if (currentIndex > 0) {
                 currentIndex--;
@@ -126,13 +141,11 @@
             }
         });
 
-        // 슬라이더 변경 이벤트
         slider.addEventListener('input', (event) => {
             currentIndex = parseInt(event.target.value, 10);
             updateImageAndSlider(currentIndex);
         });
 
-        // "자동 재생" 버튼 클릭 이벤트
         document.getElementById('auto-play-button').addEventListener('click', () => {
             if (!autoplay) {
                 autoplay = setInterval(() => {
@@ -140,17 +153,26 @@
                         currentIndex++;
                         updateImageAndSlider(currentIndex);
                     } else {
-                        clearInterval(autoplay); // 마지막 이미지에서 멈춤
+                        clearInterval(autoplay);
                         autoplay = null;
                     }
-                }, 1000); // 1초 간격
+                }, 1000);
             }
         });
 
-        // "재생 멈춤" 버튼 클릭 이벤트
         document.getElementById('stop-button').addEventListener('click', () => {
             clearInterval(autoplay);
             autoplay = null;
+        });
+
+        document.getElementById('reset-button').addEventListener('click', () => {
+            // Autoplay 정지
+            clearInterval(autoplay);
+            autoplay = null;
+
+            // 첫 페이지로 이동
+            currentIndex = 0; // 첫 번째 이미지 인덱스
+            updateImageAndSlider(currentIndex); // 이미지를 첫 번째로 업데이트
         });
     </script>
 </body>
